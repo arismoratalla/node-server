@@ -74,7 +74,7 @@ const userSchema = new Schema(
 )
 
 // Pre-save middleware: Hash password if modified
-userSchema.post('save', function (next) {
+userSchema.pre('save', function (next) {
   if (this.isModified('password')) {
     this.password = password.hash(this.password)
   }
