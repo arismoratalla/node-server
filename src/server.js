@@ -11,25 +11,34 @@ import utilityMiddlewares from './middlewares/utility'
 const server = express()
 
 /**
+ * Configure cors
+ */
+const corsOptions = function (req, callback) {
+  const whiteList = ['http://localhost:5173']
+
+  callback(null, {
+    origin: whiteList.includes(req.header('Origin'))
+  })
+}
+
+/**
  * Configure Server
  */
 server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
 server.use(helmet())
-server.use(cors())
+server.use(cors(corsOptions))
 server.use(utilityMiddlewares)
 server.use('/assets', express.static('src/public'))
 
 server.set('view engine', 'ejs')
 server.set('views', 'src/views')
 
-/*
 server.use((req, res, next) => {
   // log http request
   console.info(`[SERVER] ${req.method} ${req.originalUrl}`)
   next()
 })
-*/
 
 /**
  * Start's API Server
