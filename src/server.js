@@ -5,7 +5,8 @@ import cors from 'cors'
 import helmet from 'helmet'
 
 import buildRoutes from './routes'
-import databaseConnection from './utilities/database'
+// import databaseConnection from './utilities/database'
+import { databaseConnection } from './utilities/mysqldb'
 import utilityMiddlewares from './middlewares/utility'
 
 const server = express()

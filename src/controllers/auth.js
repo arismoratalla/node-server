@@ -22,8 +22,8 @@ authApi.post('/register', async (req, res) => {
         password: 'required|min:8|max:32',
         firstName: 'required',
         lastName: 'required',
-        gender: 'required|in:male,female',
-        age: 'number'
+        role: 'required|in:user,admin'
+        // age: 'number'
       },
       // Custom error messages
       {
