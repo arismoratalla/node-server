@@ -4,10 +4,29 @@ import sequelize from '../utilities/mysqldb'
 import { sign } from 'jsonwebtoken'
 import password from '../utilities/password'
 
+import Profile from './profile'
+
 class User extends Model {
   // Instance Method
   instanceLevelMethod () {
     return 'This is an instance method'
+  }
+
+  static async index () {
+    const users = await User.findAll({
+      attributes: ['email']
+    })
+
+    // Check if user exist
+    if (!users) {
+      throw new Error('No data.')
+    } else {
+      console.log('Success')
+    }
+
+    return {
+      ...users.toJSON()
+    }
   }
 
   static async login (email, rawPassword) {
@@ -16,18 +35,19 @@ class User extends Model {
 
     const user = await User.findOne({
       where: { email },
-      attributes: ['password']
+      attributes: ['password'],
       // include: ['Profile'] // Include association with 'Profile' model
+      include: Profile // also works
     })
 
     // Check if user exist
     if (!user) {
       throw new Error('Email does not exist.')
     }
-    console.log(password.hash(rawPassword))
+    // console.log(password.hash(rawPassword))
     // Check if password is incorrect
     if (rawPassword && user.password !== password.hash(rawPassword)) {
-      throw new Error('Incorrect password.')
+      throw new Error('Invalid credentials.')
     }
 
     // Generate access token
@@ -45,6 +65,11 @@ class User extends Model {
       accessToken
     }
   }
+
+  // static associate (models) {
+  //   // Define associations with other models
+  //   User.hasOne(models.Profile, { foreignKey: 'user_id' })
+  // }
 }
 
 User.init({
@@ -94,5 +119,7 @@ User.init({
     }
   }
 })
+
+User.hasOne(Profile, { foreignKey: 'user_id' })
 
 export default User

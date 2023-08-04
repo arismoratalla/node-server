@@ -5,8 +5,8 @@ import cors from 'cors'
 import helmet from 'helmet'
 
 import buildRoutes from './routes'
-// import databaseConnection from './utilities/database'
 import { databaseConnection } from './utilities/mysqldb'
+import { hrmisConnection } from './utilities/hrmisdb'
 import utilityMiddlewares from './middlewares/utility'
 
 const server = express()
@@ -66,6 +66,7 @@ async function bootServer () {
     await apiServer()
     await buildRoutes(server)
     await databaseConnection()
+    await hrmisConnection()
 
     console.info('[SERVER] Boot up complete.')
   } catch (error) {

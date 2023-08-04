@@ -94,6 +94,32 @@ authApi.post('/login', async (req, res) => {
   }
 })
 
+/**
+ * GET /api/auth/users
+ */
+authApi.get('/users', async (req, res) => {
+  try {
+    const data = await validate(req.body, {
+      email: 'required|email',
+      password: 'required|min:8|max:32'
+    })
+
+    // Login user
+    const user = await User.login(data.email, data.password)
+
+    // Exclude hashed password from user object
+    delete user.password
+
+    return res.json({
+      success: true,
+      message: 'User logged in.',
+      data: user
+    })
+  } catch (error) {
+    return res.error(error)
+  }
+})
+
 authUi.get('/register', async (req, res) => {
   return res.render('layout/main', {
     message: 'Hello World! - controller'
