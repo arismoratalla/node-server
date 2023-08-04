@@ -12,6 +12,7 @@
         "sourceType": "module"
     },
     "rules": {
-        "no-mixed-operators": 0
+        "no-mixed-operators": 0,
+        "camelcase": "off"
     }
 }

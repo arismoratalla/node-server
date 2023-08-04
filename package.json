@@ -36,6 +36,10 @@
     "helmet": "^7.0.0",
     "indicative": "^5.0.8",
     "jsonwebtoken": "^9.0.0",
-    "mongoose": "^7.1.2"
+    "moment": "^2.29.4",
+    "mongoose": "^7.1.2",
+    "mysql2": "^3.5.2",
+    "sequelize": "^6.32.1",
+    "sequelize-mysql-timestamp": "^1.4.0"
   }
 }

@@ -22,8 +22,8 @@ authApi.post('/register', async (req, res) => {
         password: 'required|min:8|max:32',
         firstName: 'required',
         lastName: 'required',
-        gender: 'required|in:male,female',
-        age: 'number'
+        role: 'required|in:user,admin'
+        // age: 'number'
       },
       // Custom error messages
       {
@@ -72,6 +72,32 @@ authApi.post('/register', async (req, res) => {
  * POST /api/auth/login
  */
 authApi.post('/login', async (req, res) => {
+  try {
+    const data = await validate(req.body, {
+      email: 'required|email',
+      password: 'required|min:8|max:32'
+    })
+
+    // Login user
+    const user = await User.login(data.email, data.password)
+
+    // Exclude hashed password from user object
+    delete user.password
+
+    return res.json({
+      success: true,
+      message: 'User logged in.',
+      data: user
+    })
+  } catch (error) {
+    return res.error(error)
+  }
+})
+
+/**
+ * GET /api/auth/users
+ */
+authApi.get('/users', async (req, res) => {
   try {
     const data = await validate(req.body, {
       email: 'required|email',

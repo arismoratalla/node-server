@@ -8,7 +8,7 @@ export default function utilityMiddlewares (req, res, next) {
    * @param {Object} data JSON data
    */
   res.error = function (error, data) {
-    console.error(`[ERROR] ${req.method} ${req.originalUrl}`, error && error.message)
+    console.error(`[ERROR] ${req.method} ${req.originalUrl}`, error) // && error.message)
 
     data = data || {
       success: false,

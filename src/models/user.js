@@ -1,108 +1,53 @@
+import { Sequelize, Model } from 'sequelize'
+import sequelize from '../utilities/mysqldb'
+
 import { sign } from 'jsonwebtoken'
-import { Schema, SchemaTypes, model } from 'mongoose'
 import password from '../utilities/password'
 
-/**
- * User Schema
- */
-const userSchema = new Schema(
-  // Schema Definition
-  {
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      index: true,
-      validate: {
-        validator: v => /^\S+@\S+\.\S+$/.test(v),
-        message: () => 'Invalid email address.'
-      }
-    },
-    password: {
-      type: String,
-      required: true,
-      select: false
-    },
-    firstName: {
-      type: String,
-      required: true
-    },
-    lastName: {
-      type: String,
-      required: true
-    },
-    gender: {
-      type: String,
-      enum: ['male', 'female']
-    },
-    role: {
-      type: String,
-      enum: ['user', 'admin'],
-      default: 'user'
-    },
-    address: {
-      line1: {
-        type: String
-      },
-      line2: {
-        type: String
-      }
-    },
-    favoriteColors: [
-      {
-        colorName: {
-          type: String
-        }
-      }
-    ],
-    profile: {
-      type: SchemaTypes.ObjectId,
-      ref: 'Profile'
-    },
-    friends: [
-      {
-        type: SchemaTypes.ObjectId,
-        ref: 'Profile'
-      }
-    ]
-  },
-  // Schema Options
-  {
-    timestamps: true,
-    versionKey: false
-  }
-)
+import Profile from './profile'
 
-// Pre-save middleware: Hash password if modified
-userSchema.pre('save', function (next) {
-  if (this.isModified('password')) {
-    this.password = password.hash(this.password)
+class User extends Model {
+  // Instance Method
+  instanceLevelMethod () {
+    return 'This is an instance method'
   }
 
-  return next()
-})
+  static async index () {
+    const users = await User.findAll({
+      attributes: ['email']
+    })
 
-/**
- * User Methods
- */
-class UserMethods {
-  /**
-   * Login user
-   * @param {String} email User email
-   * @param {String} password User password
-   */
+    // Check if user exist
+    if (!users) {
+      throw new Error('No data.')
+    } else {
+      console.log('Success')
+    }
+
+    return {
+      ...users.toJSON()
+    }
+  }
+
   static async login (email, rawPassword) {
     // Find user by email
-    const user = await this.findOne({ email }).select('+password').populate('profile')
+    // const user = await this.findOne({ email }).select('+password').populate('profile') // mongoose
+
+    const user = await User.findOne({
+      where: { email },
+      attributes: ['password'],
+      // include: ['Profile'] // Include association with 'Profile' model
+      include: Profile // also works
+    })
 
     // Check if user exist
     if (!user) {
       throw new Error('Email does not exist.')
     }
-
+    // console.log(password.hash(rawPassword))
     // Check if password is incorrect
     if (rawPassword && user.password !== password.hash(rawPassword)) {
-      throw new Error('Incorrect password.')
+      throw new Error('Invalid credentials.')
     }
 
     // Generate access token
@@ -120,13 +65,61 @@ class UserMethods {
       accessToken
     }
   }
+
+  // static associate (models) {
+  //   // Define associations with other models
+  //   User.hasOne(models.Profile, { foreignKey: 'user_id' })
+  // }
 }
 
-userSchema.loadClass(UserMethods)
+User.init({
+  user_id: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  email: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: true
+    }
+  },
+  password: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  firstName: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  lastName: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  role: {
+    type: Sequelize.STRING,
+    allowNull: false
+  }
+}, {
+  sequelize,
+  modelName: 'User',
+  tableName: 'tbl_user', // Specifies the name of the actual database table
+  timestamps: false, // If true, Sequelize will expect the created_at and updated_at fields to exist
+  hooks: {
+    beforeCreate: (user) => {
+      user.password = password.hash(user.password)
+    },
+    beforeUpdate: (user) => {
+      if (user.changed('password')) {
+        user.password = password.hash(user.password)
+      }
+    }
+  }
+})
 
-/**
- * User Model
- */
-const User = model('User', userSchema)
+User.hasOne(Profile, { foreignKey: 'user_id' })
 
 export default User
