@@ -99,12 +99,46 @@ hrmisApi.post('/outPM', async (req, res) => {
  */
 hrmisApi.get('/dtrs', async (req, res) => {
   try {
-    const dtrs = await Dtr.index()
+    const dtrs = await Dtr.index(req.body.date)
 
     return res.json({
       success: true,
       message: 'Fetch successful.',
       data: dtrs
+    })
+  } catch (error) {
+    return res.error(error)
+  }
+})
+
+/**
+ * GET /api/hrmis/earlybirds
+ */
+hrmisApi.get('/earlybirds', async (req, res) => {
+  try {
+    const birds = await Dtr.earlybirds()
+
+    return res.json({
+      success: true,
+      message: 'Fetched early birds successful.',
+      data: birds
+    })
+  } catch (error) {
+    return res.error(error)
+  }
+})
+
+/**
+ * GET /api/hrmis/nightowls
+ */
+hrmisApi.get('/nightowls', async (req, res) => {
+  try {
+    const owls = await Dtr.nightowls()
+
+    return res.json({
+      success: true,
+      message: 'Fetched night owls successful.',
+      data: owls
     })
   } catch (error) {
     return res.error(error)
