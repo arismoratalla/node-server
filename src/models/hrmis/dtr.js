@@ -1,25 +1,97 @@
-import { Sequelize, Model } from 'sequelize'
+import { Sequelize, Model, Op } from 'sequelize'
 import sequelize from '../../utilities/hrmisdb'
 import Employee from './employee'
 
 class Dtr extends Model {
-  static async index () {
-    const dtrs = await Dtr.findAll({
-      attributes: ['user_id', 'date', 'inAM', 'outAM', 'inPM', 'outPM'],
-      include: Employee // also works
+  static async earlybirds () {
+    // Get the current date and time in GMT+8
+    let current_date = new Date()
+    const offset = current_date.getTimezoneOffset() + (8 * 60) // Offset in minutes for GMT+8
+    current_date = new Date(current_date.getTime() + (offset * 60 * 1000))
+    current_date.setHours(0, 0, 0, 0) // Reset the time part to get start of the day in GMT+8
+
+    let target_time = new Date(current_date) // Create a date object for the target
+    target_time.setHours(8, 1, 0, 0) // Set the time to 8:01
+    target_time = target_time.getTime() / 1000
+    // console.log(target_time)
+
+    const earlybirds = await Dtr.findAll({
+      where: {
+        date: '2023-08-07',
+        remarks: null,
+        inAM: {
+          [Op.ne]: null, // Has Time In
+          [Op.lt]: target_time // Less than 8:01 AM
+        }
+      },
+      attributes: ['user_id', 'date', 'inAM', 'outAM', 'inPM', 'outPM', 'fullname'],
+      include: [{
+        model: Employee,
+        attributes: ['firstname', 'lastname']
+      }],
+      order: [['inAM', 'ASC']]
     })
 
     // Check if dtrs exist
-    if (!dtrs) {
+    if (!earlybirds) {
       throw new Error('No data.')
     } else {
-      console.log('Success')
+      console.log('Fetched early birds')
+      return earlybirds
     }
+  }
 
-    return JSON.stringify(dtrs)
-    // return {
-    //   ...dtrs.toJSON()
-    // }
+  static async nightowls () {
+    // Get the current date and time in GMT+8
+    let current_date = new Date()
+    const offset = current_date.getTimezoneOffset() + (8 * 60) // Offset in minutes for GMT+8
+    current_date = new Date(current_date.getTime() + (offset * 60 * 1000))
+    current_date.setHours(0, 0, 0, 0) // Reset the time part to get start of the day in GMT+8
+
+    let target_time = new Date(current_date) // Create a date object for the target
+    target_time.setHours(8, 1, 0, 0) // Set the time to 8:00
+    target_time = target_time.getTime() / 1000
+
+    const nightowls = await Dtr.findAll({
+      where: {
+        date: '2023-08-07',
+        remarks: null,
+        [Op.or]: [
+          {
+            inAM: {
+              // [Op.ne]: null, // Has Time In
+              [Op.gt]: target_time // Greater than 8:00 AM
+            }
+          },
+          {
+            inAM: {
+              [Op.is]: null // Has Time In
+            },
+            outAM: {
+              [Op.ne]: null
+            }
+          }
+        ]
+        // inAM: {
+        //   // [Op.ne]: null, // Has Time In
+        //   [Op.gt]: target_time // Greater than 8:00 AM
+        // }
+        // outAM: {
+        //   [Op.ne]: null
+        // }
+      },
+      attributes: ['user_id', 'date', 'inAM', 'outAM', 'inPM', 'outPM'],
+      include: Employee,
+      order: [['inAM', 'ASC']]
+    })
+
+    // Check if dtrs exist
+    if (!nightowls) {
+      throw new Error('No data.')
+    } else {
+      console.log('Fetched night owls')
+      return nightowls
+    }
   }
 
   static async timeInAM (user_id, fullname) {
@@ -41,7 +113,7 @@ class Dtr extends Model {
         outPM: null,
         inOT: null,
         outOT: null,
-        remarks: fullname,
+        remarks: null,
         ip: '127.0.0.1'
       }
     })
