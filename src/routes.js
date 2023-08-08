@@ -16,10 +16,10 @@ export default function buildRoutes (route) {
     //     </div>
     //   `)
     // } else {
-      return res.status(404).json({
-        success: false,
-        message: 'API not found.'
-      })
+    return res.status(404).json({
+      success: false,
+      message: 'API not found.'
+    })
     // }
   })
 }
