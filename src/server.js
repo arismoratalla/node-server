@@ -15,8 +15,11 @@ const server = express()
  * Configure cors
  */
 const corsOptions = function (req, callback) {
-  const whiteList = ['http://localhost:5173']
-
+  const whiteList = [
+    'http://localhost:5173',
+    'http://192.168.0.153:5173',
+    'http://172.16.110.116:5173'
+  ]
   callback(null, {
     origin: whiteList.includes(req.header('Origin'))
   })
