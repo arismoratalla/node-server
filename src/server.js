@@ -7,6 +7,7 @@ import helmet from 'helmet'
 import buildRoutes from './routes'
 import { databaseConnection } from './utilities/mysqldb'
 import { hrmisConnection } from './utilities/hrmisdb'
+import { dmsConnection } from './utilities/dmsdb'
 import utilityMiddlewares from './middlewares/utility'
 
 const server = express()
@@ -71,6 +72,7 @@ async function bootServer () {
     await buildRoutes(server)
     await databaseConnection()
     await hrmisConnection()
+    await dmsConnection()
 
     console.info('[SERVER] Boot up complete.')
   } catch (error) {
