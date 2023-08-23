@@ -1,6 +1,7 @@
 import { Sequelize, Model, Op } from 'sequelize'
 import sequelize from '../../utilities/hrmisdb'
 import Employee from './employee'
+const thisDay = '2023-08-22'
 
 class Dtr extends Model {
   static async earlybirds () {
@@ -17,7 +18,7 @@ class Dtr extends Model {
 
     const earlybirds = await Dtr.findAll({
       where: {
-        date: '2023-08-07',
+        date: thisDay,
         remarks: null,
         inAM: {
           [Op.ne]: null, // Has Time In
@@ -54,7 +55,7 @@ class Dtr extends Model {
 
     const nightowls = await Dtr.findAll({
       where: {
-        date: '2023-08-07',
+        date: thisDay,
         remarks: null,
         [Op.or]: [
           {

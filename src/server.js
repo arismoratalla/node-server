@@ -7,6 +7,7 @@ import helmet from 'helmet'
 import buildRoutes from './routes'
 import { databaseConnection } from './utilities/mysqldb'
 import { hrmisConnection } from './utilities/hrmisdb'
+import { dmsConnection } from './utilities/dmsdb'
 import utilityMiddlewares from './middlewares/utility'
 
 const server = express()
@@ -17,8 +18,11 @@ const server = express()
 const corsOptions = function (req, callback) {
   const whiteList = [
     'http://localhost:5173',
+    'http://172.16.100.87:5173',
     'http://192.168.0.153:5173',
-    'http://172.16.110.116:5173'
+    'http://172.16.110.116:5173',
+    'http://172.16.110.108:5173',
+    'http://172.16.110.78:5173'
   ]
   callback(null, {
     origin: whiteList.includes(req.header('Origin'))
@@ -70,6 +74,7 @@ async function bootServer () {
     await buildRoutes(server)
     await databaseConnection()
     await hrmisConnection()
+    await dmsConnection()
 
     console.info('[SERVER] Boot up complete.')
   } catch (error) {
