@@ -18,7 +18,7 @@ class Dtr extends Model {
     current_date.setHours(0, 0, 0, 0) // Reset the time part to get start of the day in GMT+8
 
     let target_time = new Date(current_date) // Create a date object for the target
-    target_time.setHours(8, 1, 0, 0) // Set the time to 8:01
+    target_time.setHours(8, 0, 0, 0) // Set the time to 8:01
     target_time = target_time.getTime() / 1000
 
     const earlybirds = await Dtr.findAll({
