@@ -102,7 +102,7 @@ class Dtr extends Model {
   }
 
   static async timeInAM (user_id, fullname) {
-    const today = new Date().toJSON().slice(0, 10)
+    // const today = new Date().toJSON().slice(0, 10)
     const timestamp = Math.floor(Date.now() / 1000)
     // console.log(timestamp)
     const [dtr, created] = await Dtr.findOrCreate({
@@ -134,7 +134,7 @@ class Dtr extends Model {
   }
 
   static async timeOutAM (user_id, log_type) {
-    const today = new Date().toJSON().slice(0, 10)
+    // const today = new Date().toJSON().slice(0, 10)
     const timestamp = Math.floor(Date.now() / 1000)
     const dtr = await Dtr.findOne({
       where: {
@@ -168,7 +168,7 @@ class Dtr extends Model {
   }
 
   static async timeInPM (user_id, log_type) {
-    const today = new Date().toJSON().slice(0, 10)
+    // const today = new Date().toJSON().slice(0, 10)
     const timestamp = Math.floor(Date.now() / 1000)
     const dtr = await Dtr.findOne({
       where: {
@@ -200,7 +200,7 @@ class Dtr extends Model {
   }
 
   static async timeOutPM (user_id, log_type) {
-    const today = new Date().toJSON().slice(0, 10)
+    // const today = new Date().toJSON().slice(0, 10)
     const timestamp = Math.floor(Date.now() / 1000)
     const dtr = await Dtr.findOne({
       where: {
