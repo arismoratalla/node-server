@@ -100,10 +100,8 @@ class Dtr extends Model {
     }
   }
 
-  static async timeInAM (user_id, fullname) {
-    // const today = new Date().toJSON().slice(0, 10)
+  static async timeInAM (user_id) {
     const timestamp = Math.floor(Date.now() / 1000)
-    // console.log(timestamp)
     const [dtr, created] = await Dtr.findOrCreate({
       where: {
         user_id,
@@ -124,27 +122,43 @@ class Dtr extends Model {
       }
     })
 
-    if (!created) {
-      console.log('No DTR log.')
+    if (created) {
+      console.log('Logged Time In.')
     } else {
-      // console.log(dtr.inAM)
-      return dtr
+      if (dtr.inAM) {
+        console.log(`Employee with ID ${user_id} has already timed in at ${dtr.inAM}.`)
+        // You can choose to throw an error or return a message
+        return { message: `Already timed in @ ${dtr.inAM}`, status: 'error' }
+      } else {
+        // If not, update the time-in
+        dtr.inAM = timestamp
+        await dtr.save()
+        console.log('Updated Time In.')
+      }
+    }
+
+    // Fetch the employee details
+    const employee = await Employee.findByPk(user_id)
+    if (employee) {
+      return {
+        status: 'success',
+        fullname: employee.firstname + ' ' + employee.lastname,
+        message: 'Timein(AM) Successful for ' + employee.firstname + ' ' + employee.lastname
+      }
     }
   }
 
-  static async timeOutAM (user_id, log_type) {
-    // const today = new Date().toJSON().slice(0, 10)
+  static async timeOutAM (user_id) {
     const timestamp = Math.floor(Date.now() / 1000)
+
+    // Find the DTR record for today
     const dtr = await Dtr.findOne({
-      where: {
-        user_id,
-        date: thisDay
-      }
-      // include: [Employee]
+      where: { user_id, date: thisDay }
     })
 
+    // If the DTR record doesn't exist, create a new one
     if (!dtr) {
-      const dtr = await Dtr.create({
+      await Dtr.create({
         user_id,
         date: thisDay,
         inAM: null,
@@ -154,30 +168,42 @@ class Dtr extends Model {
         inOT: null,
         outOT: null,
         remarks: null,
-        ip: '127.0.0.1',
-        fullname: 'Jin Kazama'
+        ip: '127.0.0.1'
       })
-
-      return dtr
+      console.log('Logged Time Out for a new record.')
     } else {
-      dtr.outAM = timestamp
-      dtr.save()
-      return dtr
+      // If the employee has already timed out for AM
+      if (dtr.outAM) {
+        // console.log(`Employee with ID ${user_id} has already timed out at ${dtr.outAM}.`)
+        return { message: `Already timed out @ ${dtr.outAM}`, status: 'error' }
+      } else {
+        dtr.outAM = timestamp
+        await dtr.save()
+        // console.log('Logged Time Out.')
+      }
+    }
+
+    // Fetch the employee details
+    const employee = await Employee.findByPk(user_id)
+    if (employee) {
+      return {
+        status: 'success',
+        fullname: employee.firstname + ' ' + employee.lastname,
+        message: 'Timeout(AM) Successful for ' + employee.firstname + ' ' + employee.lastname
+      }
     }
   }
 
-  static async timeInPM (user_id, log_type) {
-    // const today = new Date().toJSON().slice(0, 10)
+  static async timeInPM (user_id) {
     const timestamp = Math.floor(Date.now() / 1000)
+    // Find the DTR record for today
     const dtr = await Dtr.findOne({
-      where: {
-        user_id,
-        date: thisDay
-      }
+      where: { user_id, date: thisDay }
     })
 
+    // If the DTR record doesn't exist, create a new one
     if (!dtr) {
-      const dtr = await Dtr.create({
+      await Dtr.create({
         user_id,
         date: thisDay,
         inAM: null,
@@ -189,16 +215,31 @@ class Dtr extends Model {
         remarks: null,
         ip: '127.0.0.1'
       })
-
-      return dtr
+      console.log('Logged Time In for a new record.')
     } else {
-      dtr.inPM = timestamp
-      dtr.save()
-      return dtr
+      // If the employee has already timed out for AM
+      if (dtr.inPM) {
+        // console.log(`Employee with ID ${user_id} has already timed out at ${dtr.outAM}.`)
+        return { message: `Already timed out @ ${dtr.inPM}`, status: 'error' }
+      } else {
+        dtr.inPM = timestamp
+        await dtr.save()
+        // console.log('Logged Time Out.')
+      }
+    }
+
+    // Fetch the employee details
+    const employee = await Employee.findByPk(user_id)
+    if (employee) {
+      return {
+        status: 'success',
+        fullname: employee.firstname + ' ' + employee.lastname,
+        message: 'Timein(PM) Successful for ' + employee.firstname + ' ' + employee.lastname
+      }
     }
   }
 
-  static async timeOutPM (user_id, log_type) {
+  static async timeOutPM (user_id) {
     // const today = new Date().toJSON().slice(0, 10)
     const timestamp = Math.floor(Date.now() / 1000)
     const dtr = await Dtr.findOne({
@@ -209,7 +250,7 @@ class Dtr extends Model {
     })
 
     if (!dtr) {
-      const dtr = await Dtr.create({
+      await Dtr.create({
         user_id,
         date: thisDay,
         inAM: null,
@@ -221,12 +262,27 @@ class Dtr extends Model {
         remarks: null,
         ip: '127.0.0.1'
       })
-
-      return dtr
+      console.log('Logged Time In for a new record.')
     } else {
-      dtr.outPM = timestamp
-      dtr.save()
-      return dtr
+      // If the employee has already timed out for AM
+      if (dtr.outPM) {
+        // console.log(`Employee with ID ${user_id} has already timed out at ${dtr.outAM}.`)
+        return { message: `Already timed out @ ${dtr.outPM}`, status: 'error' }
+      } else {
+        dtr.outPM = timestamp
+        await dtr.save()
+        // console.log('Logged Time Out.')
+      }
+    }
+
+    // Fetch the employee details
+    const employee = await Employee.findByPk(user_id)
+    if (employee) {
+      return {
+        status: 'success',
+        fullname: employee.firstname + ' ' + employee.lastname,
+        message: 'Timeout(PM) Successful for ' + employee.firstname + ' ' + employee.lastname
+      }
     }
   }
 }

@@ -12,19 +12,16 @@ export const hrmisApi = Router()
  */
 hrmisApi.post('/inAM', async (req, res) => {
   try {
-    // const data = await validate(req.body, {
-    //   user_id: 'required'
-    // })
-
-    // Time-in using Employee ID
+    /*  Time-in using Employee ID
+    *   Throws an error if not found
+    *   Will not proceed on error */
     const employee = await Employee.getOne(req.body.employee_num)
 
-    const dtr = await Dtr.timeInAM(employee.user_id, employee.firstname + ' ' + employee.lastname)
+    const dtr = await Dtr.timeInAM(employee.user_id)
 
     return res.json({
       success: true,
-      message: 'Time-in Successful!!',
-      data: dtr
+      message: dtr.message
     })
   } catch (error) {
     return res.error(error)
@@ -44,8 +41,7 @@ hrmisApi.post('/outAM', async (req, res) => {
 
     return res.json({
       success: true,
-      message: 'Time-out Successful!!',
-      data: dtr
+      message: dtr.message
     })
   } catch (error) {
     return res.error(error)
@@ -65,8 +61,7 @@ hrmisApi.post('/inPM', async (req, res) => {
 
     return res.json({
       success: true,
-      message: 'Time-in Successful!!',
-      data: dtr
+      message: dtr.message
     })
   } catch (error) {
     return res.error(error)
@@ -86,8 +81,7 @@ hrmisApi.post('/outPM', async (req, res) => {
 
     return res.json({
       success: true,
-      message: 'Time-Out Successful!!',
-      data: dtr
+      message: dtr.message
     })
   } catch (error) {
     return res.error(error)
