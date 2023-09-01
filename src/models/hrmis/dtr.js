@@ -1,7 +1,13 @@
 import { Sequelize, Model, Op } from 'sequelize'
 import sequelize from '../../utilities/hrmisdb'
 import Employee from './employee'
-const thisDay = '2023-08-22'
+
+const date = new Date();
+const year = date.getFullYear();
+const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+const day = String(date.getDate()).padStart(2, '0');
+
+const thisDay = `${year}-${month}-${day}`;
 
 class Dtr extends Model {
   static async earlybirds () {
@@ -102,12 +108,12 @@ class Dtr extends Model {
     const [dtr, created] = await Dtr.findOrCreate({
       where: {
         user_id,
-        date: today
+        date: thisDay,
       },
       include: [Employee],
       defaults: {
         user_id,
-        date: today,
+        date: thisDay,
         inAM: timestamp,
         outAM: null,
         inPM: null,
@@ -133,7 +139,7 @@ class Dtr extends Model {
     const dtr = await Dtr.findOne({
       where: {
         user_id,
-        date: today
+        date: thisDay,
       }
       // include: [Employee]
     })
@@ -141,7 +147,7 @@ class Dtr extends Model {
     if (!dtr) {
       const dtr = await Dtr.create({
         user_id,
-        date: today,
+        date: thisDay,
         inAM: null,
         outAM: timestamp,
         inPM: null,
@@ -167,14 +173,14 @@ class Dtr extends Model {
     const dtr = await Dtr.findOne({
       where: {
         user_id,
-        date: today
+        date: thisDay,
       }
     })
 
     if (!dtr) {
       const dtr = await Dtr.create({
         user_id,
-        date: today,
+        date: thisDay,
         inAM: null,
         outAM: null,
         inPM: timestamp,
@@ -199,14 +205,14 @@ class Dtr extends Model {
     const dtr = await Dtr.findOne({
       where: {
         user_id,
-        date: today
+        date: thisDay,
       }
     })
 
     if (!dtr) {
       const dtr = await Dtr.create({
         user_id,
-        date: today,
+        date: thisDay,
         inAM: null,
         outAM: null,
         inPM: null,
