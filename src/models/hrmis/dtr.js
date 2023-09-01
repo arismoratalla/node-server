@@ -108,7 +108,7 @@ class Dtr extends Model {
     const [dtr, created] = await Dtr.findOrCreate({
       where: {
         user_id,
-        date: thisDay,
+        date: thisDay
       },
       include: [Employee],
       defaults: {
@@ -139,7 +139,7 @@ class Dtr extends Model {
     const dtr = await Dtr.findOne({
       where: {
         user_id,
-        date: thisDay,
+        date: thisDay
       }
       // include: [Employee]
     })
@@ -173,7 +173,7 @@ class Dtr extends Model {
     const dtr = await Dtr.findOne({
       where: {
         user_id,
-        date: thisDay,
+        date: thisDay
       }
     })
 
@@ -205,7 +205,7 @@ class Dtr extends Model {
     const dtr = await Dtr.findOne({
       where: {
         user_id,
-        date: thisDay,
+        date: thisDay
       }
     })
 
