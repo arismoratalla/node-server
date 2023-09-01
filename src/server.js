@@ -1,8 +1,7 @@
-import 'dotenv/config'
-
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
+import 'dotenv/config'
 
 import buildRoutes from './routes'
 import { databaseConnection } from './utilities/mysqldb'
