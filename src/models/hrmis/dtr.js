@@ -20,7 +20,6 @@ class Dtr extends Model {
     let target_time = new Date(current_date) // Create a date object for the target
     target_time.setHours(8, 1, 0, 0) // Set the time to 8:01
     target_time = target_time.getTime() / 1000
-    // console.log(target_time)
 
     const earlybirds = await Dtr.findAll({
       where: {
