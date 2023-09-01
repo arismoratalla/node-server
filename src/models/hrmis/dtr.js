@@ -66,7 +66,7 @@ class Dtr extends Model {
         [Op.or]: [
           {
             inAM: {
-              // [Op.ne]: null, // Has Time In
+              [Op.ne]: null, // Has Time In
               [Op.gt]: target_time // Greater than 8:00 AM
             }
           },
