@@ -10,7 +10,7 @@ class Employee extends Model {
 
     // Check if employee exist
     if (!employee) {
-      throw new Error('Employee not found.')
+      throw new Error('Employee not found!')
     } else {
       console.log('Success!!! Employee exists.')
     }

@@ -1,8 +1,7 @@
-import 'dotenv/config'
-
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
+import 'dotenv/config'
 
 import buildRoutes from './routes'
 import { databaseConnection } from './utilities/mysqldb'
@@ -19,8 +18,8 @@ const corsOptions = function (req, callback) {
   const whiteList = [
     'http://localhost:5173',
     'http://172.16.100.87:5173',
-    'http://192.168.0.153:5173',
-    'http://172.16.110.116:5173',
+    'http://192.168.0.3:5173',
+    'http://172.16.100.87:5173',
     'http://172.16.110.108:5173',
     'http://172.16.110.78:5173'
   ]
