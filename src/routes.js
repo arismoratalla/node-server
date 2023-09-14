@@ -1,9 +1,16 @@
-import { authApi, authUi } from './controllers/auth'
-import { hrmisApi } from './controllers/dtr'
-// import { dmsApi } from './controllers/dms/index'
-import { dmsApi } from './controllers/issuance'
+// ./routes
+// import { authApi, authUi } from './controllers/auth'
+// import { hrmisApi } from './controllers/dtr'
+// // import { dmsApi } from './controllers/dms/index'
+// import { dmsApi } from './controllers/issuance'
 
-export default function buildRoutes (route) {
+// export default function buildRoutes (route) {
+const authApi = require('./controllers/auth').authApi
+const authUi = require('./controllers/auth').authUi
+const hrmisApi = require('./controllers/dtr').hrmisApi
+const dmsApi = require('./controllers/issuance').dmsApi
+
+module.exports = function buildRoutes (route) {
   // Authentication Routes
   route.use('/api/auth', authApi)
   route.use('/auth', authUi)

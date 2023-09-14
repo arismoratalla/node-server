@@ -1,7 +1,10 @@
+// ./middlewares/utility
+
 /**
  * Middleware to add utility functions to the response object
  */
-export default function utilityMiddlewares (req, res, next) {
+// export default function utilityMiddlewares (req, res, next) {
+module.exports = function utilityMiddlewares (req, res, next) {
   /**
    * Return an Error 400 response
    * @param {Error} error Error object
