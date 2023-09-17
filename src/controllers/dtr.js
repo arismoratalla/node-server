@@ -108,7 +108,7 @@ hrmisApi.get('/dtrs', async (req, res) => {
 /**
  * GET /api/hrmis/earlybirds
  */
-hrmisApi.get('/earlybirds', async (req, res) => {
+/* hrmisApi.get('/earlybirds', async (req, res) => {
   try {
     const birds = await Dtr.earlybirds()
 
@@ -120,6 +120,27 @@ hrmisApi.get('/earlybirds', async (req, res) => {
   } catch (error) {
     return res.error(error)
   }
+}) */
+hrmisApi.get('/earlybirds', async (req, res) => {
+  try {
+    // Read the date from the query parameters, if it exists
+    const date = req.query.date || null
+
+    // Pass the date to your earlybirds function
+    const birds = await Dtr.earlybirds(date)
+
+    return res.json({
+      success: true,
+      message: 'Fetched early birds successfully.',
+      data: birds
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred while fetching early birds.',
+      error: error.toString()
+    })
+  }
 })
 
 /**
@@ -127,12 +148,33 @@ hrmisApi.get('/earlybirds', async (req, res) => {
  */
 hrmisApi.get('/nightowls', async (req, res) => {
   try {
-    const owls = await Dtr.nightowls()
+    // Read the date from the query parameters, if it exists
+    const date = req.query.date || null
+
+    // Pass the date to your earlybirds function
+    const owls = await Dtr.nightowls(date)
 
     return res.json({
       success: true,
       message: 'Fetched night owls successful.',
       data: owls
+    })
+  } catch (error) {
+    return res.error(error)
+  }
+})
+
+/**
+ * GET /api/hrmis/dayoff
+ */
+hrmisApi.get('/dayoff', async (req, res) => {
+  try {
+    const off = await Dtr.dayoff()
+
+    return res.json({
+      success: true,
+      message: 'Fetched dayoff successful.',
+      data: off
     })
   } catch (error) {
     return res.error(error)
