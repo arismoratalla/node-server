@@ -161,7 +161,7 @@ class Dtr extends Model {
     const [dtr, created] = await Dtr.findOrCreate({
       where: {
         user_id,
-        date: thisDay
+        date: this.getDate()
       },
       include: [Employee],
       defaults: {
@@ -173,7 +173,7 @@ class Dtr extends Model {
         outPM: null,
         inOT: null,
         outOT: null,
-        remarks: null,
+        remarks: 'API',
         ip: '127.0.0.1'
       }
     })
@@ -209,7 +209,7 @@ class Dtr extends Model {
 
     // Find the DTR record for today
     const dtr = await Dtr.findOne({
-      where: { user_id, date: thisDay }
+      where: { user_id, date: this.getDate() }
     })
 
     // If the DTR record doesn't exist, create a new one
@@ -223,7 +223,7 @@ class Dtr extends Model {
         outPM: null,
         inOT: null,
         outOT: null,
-        remarks: null,
+        remarks: 'API',
         ip: '127.0.0.1'
       })
       console.log('Logged Time Out for a new record.')
@@ -254,7 +254,7 @@ class Dtr extends Model {
     const timestamp = Math.floor(Date.now() / 1000)
     // Find the DTR record for today
     const dtr = await Dtr.findOne({
-      where: { user_id, date: thisDay }
+      where: { user_id, date: this.getDate() }
     })
 
     // If the DTR record doesn't exist, create a new one
@@ -268,7 +268,7 @@ class Dtr extends Model {
         outPM: null,
         inOT: null,
         outOT: null,
-        remarks: null,
+        remarks: 'API',
         ip: '127.0.0.1'
       })
       console.log('Logged Time In for a new record.')
@@ -308,14 +308,14 @@ class Dtr extends Model {
     if (!dtr) {
       await Dtr.create({
         user_id,
-        date: thisDay,
+        date: this.getDate(),
         inAM: null,
         outAM: null,
         inPM: null,
         outPM: timestamp,
         inOT: null,
         outOT: null,
-        remarks: null,
+        remarks: 'API',
         ip: '127.0.0.1'
       })
       console.log('Logged Time In for a new record.')
