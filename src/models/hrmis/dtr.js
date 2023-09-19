@@ -173,7 +173,7 @@ class Dtr extends Model {
         outPM: null,
         inOT: null,
         outOT: null,
-        remarks: 'API',
+        remarks: null,
         ip: '127.0.0.1'
       }
     })
@@ -223,7 +223,7 @@ class Dtr extends Model {
         outPM: null,
         inOT: null,
         outOT: null,
-        remarks: 'API',
+        remarks: null,
         ip: '127.0.0.1'
       })
       console.log('Logged Time Out for a new record.')
@@ -268,7 +268,7 @@ class Dtr extends Model {
         outPM: null,
         inOT: null,
         outOT: null,
-        remarks: 'API',
+        remarks: null,
         ip: '127.0.0.1'
       })
       console.log('Logged Time In for a new record.')
@@ -315,7 +315,7 @@ class Dtr extends Model {
         outPM: timestamp,
         inOT: null,
         outOT: null,
-        remarks: 'API',
+        remarks: null,
         ip: '127.0.0.1'
       })
       console.log('Logged Time In for a new record.')
