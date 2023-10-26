@@ -1,6 +1,11 @@
 import { Router } from 'express'
 import Issuance from '../../models/dms/issuance'
+// const axios = require('axios')
+// require('dotenv').config()
 export const dmsApi = Router()
+
+const NAS_URL = 'http://192.168.1.20:5000'
+const LOGIN_API = '/webapi/auth.cgi'
 
 /**
  * GET /api/dms/index
@@ -57,6 +62,39 @@ export const dmsApi = Router()
 /**
  * GET /api/dms/create
  */
+/* dmsApi.get('/logins', async (req, res) => {
+  const NAS_URL = 'http://192.168.1.20:5000'
+  const LOGIN_API = '/webapi/auth.cgi'
+  const USERNAME = 'dost9ict'
+  const PASSWORD = 'D057R3g10n9'
+
+  try {
+    const response = await axios.post(`${NAS_URL}${LOGIN_API}`, {
+      params: {
+        api: 'SYNO.API.Auth',
+        version: 3,
+        method: 'login',
+        account: USERNAME,
+        passwd: PASSWORD,
+        session: 'FileStation',
+        format: 'cookie'
+      }
+    })
+
+    // return response.data
+
+    return response.json({
+      success: true,
+      message: 'Logged in!'
+    })
+  } catch (error) {
+    return res.error(error)
+  }
+}) */
+
+/**
+ * GET /api/dms/create
+ */
 dmsApi.get('/create', async (req, res) => {
   try {
     const issuance = await Issuance.addRecord()
@@ -68,5 +106,54 @@ dmsApi.get('/create', async (req, res) => {
     })
   } catch (error) {
     return res.error(error)
+  }
+})
+
+/**
+ * GET /api/dms/login
+ */
+dmsApi.get('/login', async (req, res) => {
+  const url = `${NAS_URL}${LOGIN_API}`
+  const params = {
+    api: 'SYNO.API.Auth',
+    version: 3,
+    method: 'login',
+    account: 'dost9ict',
+    passwd: 'D057R3g10n9',
+    session: 'FileStation',
+    format: 'cookie'
+  }
+
+  try {
+    // Convert params object to a URLSearchParams object
+    const urlParams = new URLSearchParams(params).toString()
+
+    // Make the fetch call
+    const response = await fetch(`${url}?${urlParams}`, {
+      method: 'GET', // or 'PUT'
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+
+    if (!response.ok) {
+      console.error('Error during login request:', response.status)
+      return null
+    }
+
+    // Parse the JSON from the response
+    const data = await response.json()
+
+    if (data && data.success) {
+      console.log('Successfully logged in')
+      console.log(data)
+      return data.data.sid // Assume sid is the session ID. Adjust as needed
+    } else {
+      console.error('Error logging in:', data)
+      return null
+    }
+  } catch (error) {
+    console.error('Network error during login request:', error)
+    return null
   }
 })
