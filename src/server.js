@@ -7,6 +7,7 @@ require('dotenv').config()
 const buildRoutes = require('./routes')
 // const { databaseConnection } = require('./utilities/mysqldb')
 const { hrmisConnection } = require('./utilities/hrmisdb')
+const { faimsConnection } = require('./utilities/faimsdb')
 // const { dmsConnection } = require('./utilities/dmsdb')
 const utilityMiddlewares = require('./middlewares/utility')
 
@@ -73,6 +74,7 @@ async function bootServer () {
     await buildRoutes(server)
     // await databaseConnection()
     await hrmisConnection()
+    await faimsConnection()
     // await dmsConnection()
 
     console.info('[SERVER] Boot up complete.')
