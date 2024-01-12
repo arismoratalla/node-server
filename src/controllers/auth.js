@@ -120,6 +120,15 @@ authApi.get('/users', async (req, res) => {
   }
 })
 
+authApi.get('/getWhitelistedIps', async (req, res) => {
+  try {
+    const whitelistedIps = process.env.WHITELISTED_IPS.split(',')
+    res.json({ whitelistedIps })
+  } catch (error) {
+    return res.error(error)
+  }
+})
+
 authUi.get('/register', async (req, res) => {
   return res.render('layout/main', {
     message: 'Hello World! - controller'

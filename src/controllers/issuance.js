@@ -1,10 +1,14 @@
 import { Router } from 'express'
 import Issuance from '../models/dms/issuance'
 export const dmsApi = Router()
+// const axios = require('axios')
 
 const path = require('path')
 const fs = require('fs')
 const issuances = []
+
+const NAS_URL = 'http://192.168.1.20:5000'
+const LOGIN_API = '/webapi/auth.cgi'
 
 /**
  * GET /api/dms/create
@@ -88,5 +92,59 @@ dmsApi.get('/import', async (req, res) => {
     })
   } catch (error) {
     return res.error(error)
+  }
+})
+
+/**
+ * GET /api/dms/create
+ */
+dmsApi.get('/login', async (req, res) => {
+  const url = `${NAS_URL}${LOGIN_API}`
+  const params = {
+    api: 'SYNO.API.Auth',
+    version: 3,
+    method: 'login',
+    account: 'dost9ict',
+    passwd: 'D057R3g10n9',
+    session: 'FileStation',
+    format: 'cookie'
+  }
+
+  try {
+    // Convert params object to a URLSearchParams object
+    const urlParams = new URLSearchParams(params).toString()
+
+    // Make the fetch call
+    const response = await fetch(`${url}?${urlParams}`, {
+      method: 'GET', // or 'PUT'
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+
+    if (!response.ok) {
+      console.error('Error during login request:', response.status)
+      return null
+    }
+
+    // Parse the JSON from the response
+    const data = await response.json()
+
+    if (data && data.success) {
+      // console.log('Successfully logged in')
+      // console.log(data.data.sid)
+      return res.json({
+        status: 200,
+        data: {
+          sid: data.data.sid // Assume sid is the session ID. Adjust as needed
+        }
+      })
+    } else {
+      console.error('Error logging in:', data)
+      return null
+    }
+  } catch (error) {
+    console.error('Network error during login request:', error)
+    return null
   }
 })

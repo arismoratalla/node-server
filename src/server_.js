@@ -1,15 +1,13 @@
-const express = require('express')
-const cors = require('cors')
-const helmet = require('helmet')
-// const { createProxyMiddleware } = require('http-proxy-middleware')
-require('dotenv').config()
+import express from 'express'
+import cors from 'cors'
+import helmet from 'helmet'
+import 'dotenv/config'
 
-const buildRoutes = require('./routes')
-// const { databaseConnection } = require('./utilities/mysqldb')
-const { hrmisConnection } = require('./utilities/hrmisdb')
-const { faimsConnection } = require('./utilities/faimsdb')
-// const { dmsConnection } = require('./utilities/dmsdb')
-const utilityMiddlewares = require('./middlewares/utility')
+import buildRoutes from './routes'
+import { databaseConnection } from './utilities/mysqldb'
+import { hrmisConnection } from './utilities/hrmisdb'
+import { dmsConnection } from './utilities/dmsdb'
+import utilityMiddlewares from './middlewares/utility'
 
 const server = express()
 
@@ -18,10 +16,8 @@ const server = express()
  */
 const corsOptions = function (req, callback) {
   const whiteList = [
-    'http://119.93.144.180',
-    'https://119.93.144.180',
-    'http://timelog.dost9.ph',
-    'https://timelog.dost9.ph',
+    'http://localhost:5173',
+    'http://172.16.100.87:5173',
     'http://192.168.0.3:5173',
     'http://172.16.100.87:5173',
     'http://172.16.110.108:5173',
@@ -31,6 +27,7 @@ const corsOptions = function (req, callback) {
     origin: whiteList.includes(req.header('Origin'))
   })
 }
+
 /**
  * Configure Server
  */
@@ -45,6 +42,7 @@ server.set('view engine', 'ejs')
 server.set('views', 'src/views')
 
 server.use((req, res, next) => {
+  // log http request
   console.info(`[SERVER] ${req.method} ${req.originalUrl}`)
   next()
 })
@@ -70,12 +68,12 @@ function apiServer () {
  */
 async function bootServer () {
   try {
+    // Boot Order
     await apiServer()
     await buildRoutes(server)
-    // await databaseConnection()
+    await databaseConnection()
     await hrmisConnection()
-    await faimsConnection()
-    // await dmsConnection()
+    await dmsConnection()
 
     console.info('[SERVER] Boot up complete.')
   } catch (error) {
@@ -83,4 +81,4 @@ async function bootServer () {
   }
 }
 
-module.exports = bootServer()
+export default bootServer()

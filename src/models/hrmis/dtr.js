@@ -2,15 +2,24 @@ import { Sequelize, Model, Op } from 'sequelize'
 import sequelize from '../../utilities/hrmisdb'
 import Employee from './employee'
 
-const date = new Date()
-const year = date.getFullYear()
-const month = String(date.getMonth() + 1).padStart(2, '0') // Months are 0-indexed
-const day = String(date.getDate()).padStart(2, '0')
+// const date = new Date()
+// const year = date.getFullYear()
+// const month = String(date.getMonth() + 1).padStart(2, '0') // Months are 0-indexed
+// const day = String(date.getDate()).padStart(2, '0')
 
-const thisDay = `${year}-${month}-${day}`
+// const thisDay = `${year}-${month}-${day}`
 
 class Dtr extends Model {
-  static async earlybirds () {
+  static getDate () {
+    const date = new Date()
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0') // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0')
+
+    return `${year}-${month}-${day}`
+  }
+
+  /*  static async earlybirds () {
     // Get the current date and time in GMT+8
     let current_date = new Date()
     const offset = current_date.getTimezoneOffset() + (8 * 60) // Offset in minutes for GMT+8
@@ -23,7 +32,7 @@ class Dtr extends Model {
 
     const earlybirds = await Dtr.findAll({
       where: {
-        date: thisDay,
+        date: this.getDate(),
         remarks: null,
         inAM: {
           [Op.ne]: null, // Has Time In
@@ -45,22 +54,76 @@ class Dtr extends Model {
       console.log('Fetched early birds')
       return earlybirds
     }
+  } */
+
+  static async earlybirds (date = null) {
+    try {
+      // Get the current date and time in GMT+8
+      let targetDate
+
+      if (date) {
+        targetDate = new Date(date)
+      } else {
+        // Get the current date and time in GMT+8 if date is not passed in
+        targetDate = new Date()
+        const offset = targetDate.getTimezoneOffset() + (8 * 60) // Offset in minutes for GMT+8
+        targetDate = new Date(targetDate.getTime() + (offset * 60 * 1000))
+      }
+
+      let target_time = new Date(targetDate) // Create a date object for the target
+      target_time.setHours(8, 1, 0, 0) // Set the time to 8:01
+      target_time = target_time.getTime() / 1000
+
+      const earlybirds = await Dtr.findAll({
+        where: {
+          date: date || this.getDate(),
+          remarks: null,
+          inAM: {
+            [Op.ne]: null, // Has Time In
+            [Op.lt]: target_time // Less than 8:01 AM
+          }
+        },
+        attributes: ['user_id', 'date', 'inAM', 'outAM', 'inPM', 'outPM', 'fullname'],
+        include: [{
+          model: Employee,
+          attributes: ['firstname', 'lastname']
+        }],
+        order: [['inAM', 'ASC']]
+      })
+      // Check if dtrs exist
+      if (!earlybirds || earlybirds.length === 0) {
+        console.log('No earlybirds data found.')
+        return Promise.reject(new Error('No data.'))
+      } else {
+        console.log('Fetched early birds')
+        return earlybirds
+      }
+    } catch (error) {
+      console.error(`Error in earlybirds: ${error}`)
+      return Promise.reject(error)
+    }
   }
 
-  static async nightowls () {
+  static async nightowls (date = null) {
     // Get the current date and time in GMT+8
-    let current_date = new Date()
-    const offset = current_date.getTimezoneOffset() + (8 * 60) // Offset in minutes for GMT+8
-    current_date = new Date(current_date.getTime() + (offset * 60 * 1000))
-    current_date.setHours(0, 0, 0, 0) // Reset the time part to get start of the day in GMT+8
+    let targetDate
 
-    let target_time = new Date(current_date) // Create a date object for the target
+    if (date) {
+      targetDate = new Date(date)
+    } else {
+      // Get the current date and time in GMT+8 if date is not passed in
+      targetDate = new Date()
+      const offset = targetDate.getTimezoneOffset() + (8 * 60) // Offset in minutes for GMT+8
+      targetDate = new Date(targetDate.getTime() + (offset * 60 * 1000))
+    }
+
+    let target_time = new Date(targetDate) // Create a date object for the target
     target_time.setHours(8, 1, 0, 0) // Set the time to 8:00
     target_time = target_time.getTime() / 1000
 
     const nightowls = await Dtr.findAll({
       where: {
-        date: thisDay,
+        date: date || this.getDate(),
         remarks: null,
         [Op.or]: [
           {
@@ -78,13 +141,6 @@ class Dtr extends Model {
             }
           }
         ]
-        // inAM: {
-        //   // [Op.ne]: null, // Has Time In
-        //   [Op.gt]: target_time // Greater than 8:00 AM
-        // }
-        // outAM: {
-        //   [Op.ne]: null
-        // }
       },
       attributes: ['user_id', 'date', 'inAM', 'outAM', 'inPM', 'outPM'],
       include: Employee,
@@ -105,12 +161,12 @@ class Dtr extends Model {
     const [dtr, created] = await Dtr.findOrCreate({
       where: {
         user_id,
-        date: thisDay
+        date: this.getDate()
       },
       include: [Employee],
       defaults: {
         user_id,
-        date: thisDay,
+        date: this.getDate(),
         inAM: timestamp,
         outAM: null,
         inPM: null,
@@ -153,14 +209,14 @@ class Dtr extends Model {
 
     // Find the DTR record for today
     const dtr = await Dtr.findOne({
-      where: { user_id, date: thisDay }
+      where: { user_id, date: this.getDate() }
     })
 
     // If the DTR record doesn't exist, create a new one
     if (!dtr) {
       await Dtr.create({
         user_id,
-        date: thisDay,
+        date: this.getDate(),
         inAM: null,
         outAM: timestamp,
         inPM: null,
@@ -198,14 +254,14 @@ class Dtr extends Model {
     const timestamp = Math.floor(Date.now() / 1000)
     // Find the DTR record for today
     const dtr = await Dtr.findOne({
-      where: { user_id, date: thisDay }
+      where: { user_id, date: this.getDate() }
     })
 
     // If the DTR record doesn't exist, create a new one
     if (!dtr) {
       await Dtr.create({
         user_id,
-        date: thisDay,
+        date: this.getDate(),
         inAM: null,
         outAM: null,
         inPM: timestamp,
@@ -245,14 +301,14 @@ class Dtr extends Model {
     const dtr = await Dtr.findOne({
       where: {
         user_id,
-        date: thisDay
+        date: this.getDate()
       }
     })
 
     if (!dtr) {
       await Dtr.create({
         user_id,
-        date: thisDay,
+        date: this.getDate(),
         inAM: null,
         outAM: null,
         inPM: null,
