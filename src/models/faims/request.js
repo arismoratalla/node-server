@@ -11,7 +11,33 @@ class Request extends Model {
   static async index () {
     try {
       const requests = await Request.findAll({
-        attributes: ['request_id', 'request_number', 'request_date', 'particulars', 'payee_id', 'amount'],
+        attributes: [
+          'request_type_id',
+          'division_id',
+          'obligation_type_id',
+          'project_type_id',
+          'project_id',
+          'payee_id',
+          'status_id',
+          'district_id',
+          'request_number',
+          'request_date',
+          'particulars',
+          'amount',
+          'created_by',
+          'payroll',
+          'purchase_order_id',
+          'cancelled',
+          'remarks',
+          'override',
+          'override_reason'
+          // 'request_id',
+          // 'request_number',
+          // 'request_date',
+          // 'particulars',
+          // 'payee_id',
+          // 'amount'
+        ],
         include: [{
           model: Payee,
           attributes: ['creditor_id', 'creditor_type_id', 'name'],
