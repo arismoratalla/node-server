@@ -51,7 +51,7 @@ class Request extends Model {
         console.log('No requests data found.')
         return Promise.reject(new Error('No data.'))
       } else {
-        console.log('Fetched early birds')
+        // console.log('Fetched early birds')
         return requests
       }
     } catch (error) {
