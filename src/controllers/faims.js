@@ -1,6 +1,6 @@
 import { Router } from 'express'
 // import { sign } from 'jsonwebtoken'
-import RequestAttachment from '../models/faims/attachment'
+import RequestAttachment from '../models/faims/requestattachment'
 import Request from '../models/faims/request'
 import Payee from '../models/faims/payee'
 
