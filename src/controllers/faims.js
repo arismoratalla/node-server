@@ -1,12 +1,13 @@
 import { Router } from 'express'
 // import { sign } from 'jsonwebtoken'
+import RequestAttachment from '../models/faims/attachment'
 import Request from '../models/faims/request'
 import Payee from '../models/faims/payee'
 
 export const faimsApi = Router()
 
 /**
- * GET /api/hrmis/dtrs
+ * GET /api/faims/requests
  */
 faimsApi.get('/requests', async (req, res) => {
   try {
@@ -22,6 +23,26 @@ faimsApi.get('/requests', async (req, res) => {
   }
 })
 
+/**
+ * GET /api/faims/requestattachments
+ */
+faimsApi.get('/requestattachments', async (req, res) => {
+  try {
+    const requestattachments = await RequestAttachment.index(req.body.date)
+
+    return res.json({
+      success: true,
+      message: 'Fetch successful.',
+      data: requestattachments
+    })
+  } catch (error) {
+    return res.error(error)
+  }
+})
+
+/**
+ * GET /api/faims/payees
+ */
 faimsApi.get('/payees', async (req, res) => {
   try {
     const payees = await Payee.index(req.body.date)
